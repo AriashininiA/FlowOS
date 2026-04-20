@@ -1,0 +1,1061 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Cognitive OS — Pitch Deck</title>
+  <link href="https://api.fontshare.com/v2/css?f[]=clash-display@700,600&f[]=satoshi@400,500,700&display=swap" rel="stylesheet" />
+  <style>
+    /* === THEME === */
+    :root {
+      --bg: #060d1a;
+      --bg-card: rgba(255,255,255,0.04);
+      --bg-card-border: rgba(255,255,255,0.08);
+      --text: #ffffff;
+      --text-2: rgba(255,255,255,0.5);
+      --text-3: rgba(255,255,255,0.25);
+      --cyan: #00ffcc;
+      --mag: #ff00aa;
+      --cyan-glow: rgba(0,255,204,0.25);
+      --mag-glow: rgba(255,0,170,0.2);
+      --fd: 'Clash Display', sans-serif;
+      --fb: 'Satoshi', sans-serif;
+      --ease: cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+    /* =====================================================
+       VIEWPORT BASE (mandatory — do not remove)
+       ===================================================== */
+    html, body { height: 100%; overflow-x: hidden; }
+    html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+    .slide {
+      width: 100vw; height: 100vh; height: 100dvh;
+      overflow: hidden; scroll-snap-align: start;
+      display: flex; flex-direction: column;
+      position: relative; background: var(--bg);
+    }
+    .slide-content {
+      flex: 1; display: flex; flex-direction: column;
+      justify-content: center; max-height: 100%; overflow: hidden;
+      padding: var(--sp);
+    }
+    :root {
+      --ts: clamp(1.5rem, 5vw, 4rem);
+      --h2: clamp(1.25rem, 3.5vw, 2.5rem);
+      --h3: clamp(1rem, 2.5vw, 1.75rem);
+      --bs: clamp(0.75rem, 1.5vw, 1.125rem);
+      --ss: clamp(0.65rem, 1vw, 0.875rem);
+      --sp: clamp(1rem, 4vw, 4rem);
+      --gap: clamp(0.5rem, 2vw, 2rem);
+      --eg: clamp(0.25rem, 1vw, 1rem);
+    }
+    img, .image-container { max-width: 100%; max-height: min(50vh, 400px); object-fit: contain; }
+
+    @media (max-height: 700px) {
+      :root { --sp: clamp(0.75rem, 3vw, 2rem); --gap: clamp(0.4rem, 1.5vw, 1rem); --ts: clamp(1.25rem, 4.5vw, 2.5rem); --h2: clamp(1rem, 3vw, 1.75rem); }
+    }
+    @media (max-height: 600px) {
+      :root { --sp: clamp(0.5rem, 2.5vw, 1.5rem); --gap: clamp(0.3rem, 1vw, 0.75rem); --ts: clamp(1.1rem, 4vw, 2rem); --bs: clamp(0.7rem, 1.2vw, 0.95rem); }
+      .nav-dots, .decorative { display: none; }
+    }
+    @media (max-height: 500px) {
+      :root { --sp: clamp(0.4rem, 2vw, 1rem); --ts: clamp(1rem, 3.5vw, 1.5rem); --h2: clamp(0.9rem, 2.5vw, 1.25rem); --bs: clamp(0.65rem, 1vw, 0.85rem); }
+    }
+    @media (max-width: 600px) {
+      :root { --ts: clamp(1.25rem, 7vw, 2.5rem); }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.2s !important; }
+      html { scroll-behavior: auto; }
+    }
+    /* =====================================================
+       END VIEWPORT BASE
+       ===================================================== */
+
+    body { font-family: var(--fb); color: var(--text); }
+
+    /* Grid on every slide */
+    .slide::before {
+      content: ''; position: absolute; inset: 0; z-index: 0;
+      background-image:
+        linear-gradient(rgba(0,255,204,0.04) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,255,204,0.04) 1px, transparent 1px);
+      background-size: 44px 44px; pointer-events: none;
+    }
+    .slide > * { position: relative; z-index: 1; }
+
+    /* === PROGRESS BAR === */
+    .progress-bar {
+      position: fixed; top: 0; left: 0; height: 2px; width: 0%;
+      background: linear-gradient(90deg, var(--cyan), var(--mag));
+      box-shadow: 0 0 8px var(--cyan); z-index: 1000;
+      transition: width 0.3s var(--ease);
+    }
+
+    /* === NAV DOTS === */
+    .nav-dots {
+      position: fixed; right: clamp(0.75rem, 2vw, 1.5rem); top: 50%;
+      transform: translateY(-50%);
+      display: flex; flex-direction: column; gap: 0.5rem; z-index: 1000;
+    }
+    .nav-dot {
+      width: 6px; height: 6px; border-radius: 50%;
+      background: rgba(255,255,255,0.2); cursor: pointer; border: none;
+      transition: all 0.3s ease;
+    }
+    .nav-dot.active { background: var(--cyan); box-shadow: 0 0 8px var(--cyan); transform: scale(1.4); }
+
+    /* === REVEAL === */
+    .reveal {
+      opacity: 0; transform: translateY(22px);
+      transition: opacity 0.65s var(--ease), transform 0.65s var(--ease);
+    }
+    .slide.visible .reveal { opacity: 1; transform: translateY(0); }
+    .slide.visible .reveal:nth-child(1) { transition-delay: 0.05s; }
+    .slide.visible .reveal:nth-child(2) { transition-delay: 0.15s; }
+    .slide.visible .reveal:nth-child(3) { transition-delay: 0.25s; }
+    .slide.visible .reveal:nth-child(4) { transition-delay: 0.35s; }
+    .slide.visible .reveal:nth-child(5) { transition-delay: 0.45s; }
+    .slide.visible .reveal:nth-child(6) { transition-delay: 0.55s; }
+
+    /* === SHARED === */
+    .badge {
+      display: inline-flex; align-items: center; gap: 0.55rem;
+      border: 1px solid rgba(0,255,204,0.35); color: var(--cyan);
+      font-family: var(--fb); font-size: clamp(0.58rem, 1vw, 0.73rem);
+      letter-spacing: 0.18em; text-transform: uppercase;
+      padding: 0.5em 1.1em; width: fit-content;
+    }
+    .bdot {
+      width: 5px; height: 5px; border-radius: 50%;
+      background: var(--cyan); box-shadow: 0 0 6px var(--cyan);
+      animation: blink 2.5s ease infinite;
+    }
+    .blabel {
+      font-family: var(--fb); font-size: clamp(0.52rem, 0.85vw, 0.68rem);
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--text-3);
+      margin-bottom: clamp(0.4rem, 0.8vw, 0.6rem);
+    }
+    .gline {
+      height: 1px; background: linear-gradient(90deg, var(--cyan), transparent);
+      box-shadow: 0 0 8px var(--cyan-glow);
+      width: clamp(50px, 8vw, 90px);
+    }
+    .orb {
+      position: absolute; border-radius: 50%; pointer-events: none; z-index: 0;
+    }
+    .oc { background: radial-gradient(circle, rgba(0,255,204,0.12) 0%, transparent 65%); }
+    .om { background: radial-gradient(circle, rgba(255,0,170,0.1) 0%, transparent 65%); }
+
+    /* =====================================================
+       SLIDE 1 — TITLE
+       ===================================================== */
+    #s1 { justify-content: flex-end; }
+    #s1 .o1 { width: clamp(280px, 48vw, 620px); height: clamp(280px, 48vw, 620px); right: -8%; top: -18%; }
+    #s1 .o2 { width: clamp(200px, 32vw, 420px); height: clamp(200px, 32vw, 420px); left: 5%; bottom: -15%; }
+    #s1 .corner {
+      position: absolute; top: var(--sp); right: var(--sp);
+      font-family: var(--fb); font-size: clamp(0.52rem, 0.85vw, 0.68rem);
+      color: var(--text-3); letter-spacing: 0.12em;
+    }
+    #s1 .inner { padding: var(--sp); display: flex; flex-direction: column; justify-content: flex-end; flex: 1; }
+    #s1 .app-name {
+      font-family: var(--fd);
+      font-size: clamp(1.15rem, 2.6vw, 2rem);
+      font-weight: 700;
+      color: var(--cyan);
+      letter-spacing: 0.02em;
+      margin-bottom: clamp(0.65rem, 1.2vw, 0.95rem);
+      text-shadow: 0 0 20px rgba(0,255,204,0.28);
+    }
+    #s1 h1 {
+      font-family: var(--fd);
+      font-size: clamp(2.8rem, 8vw, 6.8rem);
+      font-weight: 700; line-height: 1.02; color: var(--text);
+      margin-bottom: clamp(0.75rem, 1.5vw, 1.2rem);
+    }
+    #s1 h1 .c { color: var(--cyan); text-shadow: 0 0 30px rgba(0,255,204,0.5); }
+    #s1 .sub {
+      font-size: clamp(0.82rem, 1.7vw, 1.15rem);
+      color: var(--text-2); max-width: 52ch; line-height: 1.7;
+      margin-bottom: clamp(1.5rem, 3vh, 2.5rem);
+    }
+    #s1 .hero-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: clamp(1.25rem, 6vw, 5rem);
+      width: min(92vw, 960px);
+      margin-top: clamp(0.5rem, 1vh, 1rem);
+    }
+    #s1 .metric-value {
+      font-family: var(--fd);
+      font-size: clamp(1.8rem, 4.8vw, 3.5rem);
+      font-weight: 700;
+      line-height: 0.92;
+      color: var(--cyan);
+      letter-spacing: 0;
+    }
+    #s1 .metric-value.mg {
+      color: var(--mag);
+      text-shadow: 0 0 26px rgba(255,0,170,0.32);
+    }
+    #s1 .metric-label {
+      margin-top: clamp(0.6rem, 1.1vw, 0.85rem);
+      font-size: clamp(0.58rem, 1.25vw, 0.92rem);
+      line-height: 1.1;
+      color: var(--text-2);
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+    @media (max-width: 760px) {
+      #s1 .hero-metrics {
+        gap: clamp(0.8rem, 3vw, 1.5rem);
+      }
+      #s1 .metric-value {
+        font-size: clamp(1.35rem, 7vw, 2.15rem);
+      }
+      #s1 .metric-label {
+        font-size: clamp(0.44rem, 1.9vw, 0.62rem);
+        letter-spacing: 0.12em;
+      }
+    }
+    @media (max-height: 650px) {
+      #s1 .sub {
+        margin-bottom: clamp(0.9rem, 2vh, 1.4rem);
+      }
+      #s1 .metric-value {
+        font-size: clamp(1.55rem, 4.2vw, 2.7rem);
+      }
+      #s1 .metric-label {
+        font-size: clamp(0.5rem, 1vw, 0.74rem);
+        margin-top: 0.45rem;
+      }
+    }
+
+    /* =====================================================
+       SLIDE 2 — PROBLEM
+       ===================================================== */
+    #s2 .o1 { width: clamp(350px, 55vw, 700px); height: clamp(350px, 55vw, 700px); left: 50%; top: 50%; transform: translate(-50%,-50%); }
+    #s2 .pquote {
+      font-family: var(--fd);
+      font-size: clamp(1.9rem, 5.5vw, 4.6rem);
+      font-weight: 700; line-height: 1.1; max-width: 18ch;
+      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    #s2 .pquote .m { color: var(--mag); text-shadow: 0 0 25px rgba(255,0,170,0.45); }
+    #s2 .insight {
+      border-left: 2px solid var(--cyan);
+      padding-left: clamp(1rem, 2vw, 1.5rem); max-width: 52ch;
+    }
+    #s2 .insight p {
+      font-size: clamp(0.8rem, 1.55vw, 1.05rem);
+      color: var(--text-2); line-height: 1.75;
+    }
+    #s2 .insight p strong { color: var(--text); }
+
+    /* =====================================================
+       SLIDE 3 — WHY TOOLS FAIL
+       ===================================================== */
+    #s3 h2 {
+      font-family: var(--fd); font-size: var(--h2); font-weight: 700;
+      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    #s3 .fgrid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: clamp(0.75rem, 1.8vw, 1.4rem); max-width: min(90vw, 860px);
+    }
+    #s3 .fc {
+      background: var(--bg-card); border: 1px solid var(--bg-card-border);
+      padding: clamp(1rem, 2.5vw, 1.75rem); position: relative;
+    }
+    #s3 .fc::after {
+      content: '✕'; position: absolute;
+      top: clamp(0.5rem, 1vw, 0.75rem); right: clamp(0.5rem, 1vw, 0.75rem);
+      font-size: clamp(0.65rem, 1.1vw, 0.85rem); color: var(--mag); opacity: 0.75;
+    }
+    #s3 .fn {
+      font-family: var(--fd); font-size: clamp(0.82rem, 1.5vw, 1.05rem);
+      font-weight: 600; color: var(--text-2);
+      margin-bottom: clamp(0.35rem, 0.7vw, 0.55rem);
+    }
+    #s3 .fr { font-size: clamp(0.68rem, 1.15vw, 0.82rem); color: var(--text-3); line-height: 1.6; }
+    #s3 .fb2 {
+      margin-top: clamp(1rem, 2.5vw, 2rem);
+      font-size: clamp(0.78rem, 1.4vw, 0.95rem); color: var(--text-2); max-width: 58ch;
+    }
+    #s3 .fb2 strong { color: var(--cyan); }
+    @media (max-width: 600px) { #s3 .fgrid { grid-template-columns: 1fr; } }
+
+    /* =====================================================
+       SLIDE 4 — SOLUTION
+       ===================================================== */
+    #s4 h2 {
+      font-family: var(--fd); font-size: var(--h2); font-weight: 700;
+      margin-bottom: clamp(1.25rem, 2.5vw, 2rem);
+    }
+    #s4 .steps { display: flex; flex-direction: column; gap: clamp(0.5rem, 1.2vw, 0.9rem); max-width: min(90vw, 680px); }
+    #s4 .step {
+      display: flex; align-items: flex-start;
+      gap: clamp(0.75rem, 1.8vw, 1.4rem);
+      background: var(--bg-card); border: 1px solid var(--bg-card-border);
+      padding: clamp(0.7rem, 1.6vw, 1.1rem) clamp(1rem, 2vw, 1.6rem);
+    }
+    #s4 .step.hi { border-color: rgba(0,255,204,0.3); }
+    #s4 .sn {
+      font-family: var(--fd); font-size: clamp(0.95rem, 1.8vw, 1.3rem);
+      font-weight: 700; color: var(--cyan); min-width: 2ch; line-height: 1.3;
+    }
+    #s4 .step.hi .sn { color: var(--mag); text-shadow: 0 0 15px rgba(255,0,170,0.45); }
+    #s4 .st {
+      font-family: var(--fd); font-size: clamp(0.85rem, 1.5vw, 1.05rem);
+      font-weight: 600; color: var(--text); margin-bottom: 0.18em;
+    }
+    #s4 .step.hi .st { color: var(--cyan); }
+    #s4 .sd { font-size: clamp(0.65rem, 1.05vw, 0.8rem); color: var(--text-3); line-height: 1.55; }
+
+    /* =====================================================
+       SLIDE 5 — FLOW MODE
+       ===================================================== */
+    #s5 { display: grid; grid-template-columns: 1fr 1fr; }
+    #s5 .fl {
+      background: var(--bg); display: flex; flex-direction: column;
+      justify-content: center; padding: var(--sp);
+      border-right: 1px solid rgba(0,255,204,0.1); overflow: hidden;
+    }
+    #s5 .fr2 {
+      background: rgba(0,255,204,0.025); display: flex; flex-direction: column;
+      justify-content: center; padding: var(--sp); overflow: hidden;
+    }
+    #s5 .ftag {
+      font-family: var(--fb); font-size: clamp(0.52rem, 0.88vw, 0.68rem);
+      letter-spacing: 0.2em; text-transform: uppercase; color: var(--mag);
+      margin-bottom: clamp(0.75rem, 1.5vw, 1.2rem);
+    }
+    #s5 h2 {
+      font-family: var(--fd); font-size: clamp(2rem, 5.5vw, 4.5rem);
+      font-weight: 700; line-height: 1.0; margin-bottom: clamp(0.75rem, 1.5vw, 1.2rem);
+    }
+    #s5 h2 .fg { color: var(--cyan); text-shadow: 0 0 35px rgba(0,255,204,0.6), 0 0 70px rgba(0,255,204,0.2); }
+    #s5 .fdesc {
+      font-size: clamp(0.8rem, 1.45vw, 0.98rem);
+      color: var(--text-2); max-width: 36ch; line-height: 1.75;
+    }
+    #s5 .ffeats { display: flex; flex-direction: column; gap: clamp(0.55rem, 1.3vw, 0.95rem); }
+    #s5 .ff {
+      display: flex; align-items: flex-start; gap: clamp(0.55rem, 1.1vw, 0.9rem);
+      background: rgba(0,255,204,0.03); border: 1px solid rgba(0,255,204,0.1);
+      padding: clamp(0.6rem, 1.4vw, 1rem) clamp(0.75rem, 1.5vw, 1.2rem);
+    }
+    #s5 .fi { font-size: clamp(0.85rem, 1.4vw, 1rem); min-width: 1.4em; line-height: 1.4; }
+    #s5 .fft {
+      font-family: var(--fd); font-size: clamp(0.75rem, 1.25vw, 0.92rem);
+      font-weight: 600; color: var(--text); margin-bottom: 0.12em;
+    }
+    #s5 .ffd { font-size: clamp(0.6rem, 0.95vw, 0.75rem); color: var(--text-3); line-height: 1.5; }
+    @media (max-width: 700px) { #s5 { grid-template-columns: 1fr; } }
+
+    /* =====================================================
+       SLIDE 6 — MARKET
+       ===================================================== */
+    #s6 h2 {
+      font-family: var(--fd); font-size: var(--h2); font-weight: 700;
+      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    #s6 .mgrid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: clamp(0.75rem, 1.8vw, 1.4rem); max-width: min(90vw, 820px);
+    }
+    #s6 .tier {
+      background: var(--bg-card); border: 1px solid var(--bg-card-border);
+      padding: clamp(1rem, 2.5vw, 1.75rem); position: relative; overflow: hidden;
+    }
+    #s6 .tier::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; }
+    #s6 .t1::before { background: var(--cyan); box-shadow: 0 0 12px var(--cyan); }
+    #s6 .t2::before { background: rgba(255,255,255,0.35); }
+    #s6 .t3::before { background: rgba(255,255,255,0.15); }
+    #s6 .tlbl {
+      font-family: var(--fb); font-size: clamp(0.52rem, 0.82vw, 0.65rem);
+      letter-spacing: 0.18em; text-transform: uppercase;
+      color: var(--cyan); margin-bottom: 0.45em;
+    }
+    #s6 .t2 .tlbl, #s6 .t3 .tlbl { color: var(--text-3); }
+    #s6 .tname {
+      font-family: var(--fd); font-size: clamp(0.9rem, 1.7vw, 1.2rem);
+      font-weight: 600; color: var(--text); margin-bottom: 0.45em;
+    }
+    #s6 .twho { font-size: clamp(0.63rem, 1.05vw, 0.8rem); color: var(--text-3); line-height: 1.6; }
+    #s6 .mstat {
+      margin-top: clamp(1.2rem, 2.5vw, 2rem);
+      font-size: clamp(0.75rem, 1.35vw, 0.92rem); color: var(--text-2);
+    }
+    #s6 .mstat strong { color: var(--cyan); }
+    @media (max-width: 600px) { #s6 .mgrid { grid-template-columns: 1fr; } }
+
+    /* =====================================================
+       SLIDE 7 — TECH
+       ===================================================== */
+    #s7 h2 {
+      font-family: var(--fd); font-size: var(--h2); font-weight: 700;
+      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    #s7 .loop {
+      display: flex; align-items: stretch; gap: 0;
+      max-width: min(90vw, 840px);
+      margin-bottom: clamp(1rem, 2.5vw, 2rem);
+    }
+    #s7 .ln {
+      flex: 1; background: var(--bg-card); border: 1px solid rgba(0,255,204,0.25);
+      padding: clamp(0.7rem, 1.6vw, 1.1rem) clamp(0.75rem, 1.5vw, 1.1rem);
+      text-align: center; position: relative;
+    }
+    #s7 .ln:not(:last-child)::after {
+      content: '›'; position: absolute;
+      right: calc(-1 * clamp(0.45rem, 0.9vw, 0.7rem));
+      top: 50%; transform: translateY(-50%);
+      font-size: clamp(0.9rem, 1.6vw, 1.2rem);
+      color: var(--cyan); z-index: 2; line-height: 1;
+    }
+    #s7 .lt {
+      font-family: var(--fd); font-size: clamp(0.72rem, 1.3vw, 0.95rem);
+      font-weight: 600; color: var(--cyan); margin-bottom: 0.3em;
+    }
+    #s7 .ld { font-size: clamp(0.58rem, 0.92vw, 0.7rem); color: var(--text-3); line-height: 1.5; }
+    #s7 .tpts { display: flex; flex-wrap: wrap; gap: clamp(0.5rem, 1.5vw, 1.5rem); }
+    #s7 .tp {
+      font-size: clamp(0.7rem, 1.2vw, 0.85rem); color: var(--text-2); line-height: 1.6;
+    }
+    #s7 .tp::before { content: '▸ '; color: var(--cyan); }
+    @media (max-width: 600px) {
+      #s7 .loop { flex-direction: column; }
+      #s7 .ln:not(:last-child)::after { content: '↓'; right: auto; left: 50%; top: auto; bottom: calc(-1 * clamp(0.45rem, 0.9vw, 0.7rem)); transform: translateX(-50%); }
+    }
+
+    /* =====================================================
+       SLIDE 8 — ROADMAP
+       ===================================================== */
+    #s8 h2 {
+      font-family: var(--fd); font-size: var(--h2); font-weight: 700;
+      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    #s8 .rgrid {
+      display: grid; grid-template-columns: repeat(3, 1fr);
+      gap: clamp(0.75rem, 1.8vw, 1.4rem); max-width: min(90vw, 820px);
+    }
+    #s8 .ph {
+      background: var(--bg-card); border: 1px solid var(--bg-card-border);
+      padding: clamp(1rem, 2.5vw, 1.75rem);
+    }
+    #s8 .ph1 { border-color: rgba(0,255,204,0.3); }
+    #s8 .pv {
+      font-family: var(--fd); font-size: clamp(1.3rem, 2.8vw, 2rem);
+      font-weight: 700; color: var(--text-3); margin-bottom: 0.3em;
+    }
+    #s8 .ph1 .pv { color: var(--cyan); text-shadow: 0 0 15px rgba(0,255,204,0.4); }
+    #s8 .pname {
+      font-family: var(--fd); font-size: clamp(0.78rem, 1.35vw, 0.95rem);
+      font-weight: 600; color: var(--text-2);
+      margin-bottom: clamp(0.5rem, 1vw, 0.8rem);
+    }
+    #s8 .pfl { list-style: none; display: flex; flex-direction: column; gap: clamp(0.28rem, 0.55vw, 0.45rem); }
+    #s8 .pfl li { font-size: clamp(0.6rem, 1vw, 0.75rem); color: var(--text-3); line-height: 1.5; }
+    #s8 .pfl li::before { content: '— '; color: var(--cyan); opacity: 0.5; }
+    #s8 .ph1 .pfl li::before { opacity: 1; }
+    @media (max-width: 600px) { #s8 .rgrid { grid-template-columns: 1fr; } }
+
+    /* =====================================================
+       SLIDE 9 — VISION + CTA
+       ===================================================== */
+    #s9 .o1 { width: clamp(300px, 52vw, 680px); height: clamp(300px, 52vw, 680px); right: -12%; bottom: -18%; }
+    #s9 .o2 { width: clamp(200px, 32vw, 420px); height: clamp(200px, 32vw, 420px); left: -5%; top: 8%; }
+    #s9 h2 {
+      font-family: var(--fd); font-size: clamp(1.9rem, 6vw, 5rem);
+      font-weight: 700; line-height: 1.08; max-width: 18ch;
+      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    #s9 h2 .vc { color: var(--cyan); text-shadow: 0 0 28px rgba(0,255,204,0.45); }
+    #s9 h2 .vm { color: var(--mag); text-shadow: 0 0 28px rgba(255,0,170,0.35); }
+    #s9 .vsub {
+      font-size: clamp(0.8rem, 1.55vw, 1.05rem);
+      color: var(--text-2); max-width: 50ch; line-height: 1.78;
+      margin-bottom: clamp(1.5rem, 3vh, 2.5rem);
+    }
+    #s9 .ctarow { display: flex; align-items: center; gap: clamp(1rem, 2.5vw, 2rem); flex-wrap: wrap; }
+    #s9 .cemail {
+      font-family: var(--fb); font-size: clamp(0.75rem, 1.35vw, 0.92rem);
+      color: var(--cyan); letter-spacing: 0.04em;
+      border-bottom: 1px solid rgba(0,255,204,0.35); padding-bottom: 0.12em;
+    }
+    #s9 .cdiv { width: 1px; height: 1.1em; background: rgba(255,255,255,0.15); }
+    #s9 .ctag {
+      font-family: var(--fd); font-size: clamp(0.65rem, 1.05vw, 0.8rem);
+      color: var(--text-3); font-style: italic;
+    }
+    #s9 .bline {
+      position: absolute; bottom: var(--sp); left: var(--sp); right: var(--sp);
+      display: flex; justify-content: space-between; align-items: center;
+    }
+    #s9 .brand {
+      font-family: var(--fd); font-size: clamp(0.68rem, 1.1vw, 0.85rem);
+      color: var(--text-3); letter-spacing: 0.1em;
+    }
+    #s9 .brand .bc { color: var(--cyan); }
+    #s9 .cnt { font-family: var(--fb); font-size: clamp(0.52rem, 0.85vw, 0.68rem); color: var(--text-3); }
+
+    /* =====================================================
+       SLIDE 9 — TEAM
+       ===================================================== */
+    #s9t h2 {
+      font-family: var(--fd); font-size: var(--h2); font-weight: 700;
+      margin-bottom: clamp(1.5rem, 3vw, 2.5rem);
+    }
+    #s9t .tgrid {
+      display: grid; grid-template-columns: repeat(2, 1fr);
+      gap: clamp(1rem, 2.5vw, 2rem); max-width: min(90vw, 780px);
+    }
+    #s9t .pcard {
+      background: var(--bg-card); border: 1px solid var(--bg-card-border);
+      padding: clamp(1.2rem, 3vw, 2.2rem);
+      position: relative; overflow: hidden;
+    }
+    #s9t .pcard::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px;
+      background: linear-gradient(90deg, var(--mag), transparent);
+      box-shadow: 0 0 10px var(--mag);
+    }
+    #s9t .pcard:last-child::before {
+      background: linear-gradient(90deg, var(--cyan), transparent);
+      box-shadow: 0 0 10px var(--cyan);
+    }
+    #s9t .pname {
+      font-family: var(--fd); font-size: clamp(1.1rem, 2.2vw, 1.6rem);
+      font-weight: 700; color: var(--text);
+      margin-bottom: 0.2em;
+    }
+    #s9t .prole {
+      font-family: var(--fb); font-size: clamp(0.6rem, 1vw, 0.75rem);
+      letter-spacing: 0.15em; text-transform: uppercase;
+      color: var(--mag); margin-bottom: clamp(0.75rem, 1.8vw, 1.3rem);
+    }
+    #s9t .pcard:last-child .prole { color: var(--cyan); }
+    #s9t .pcreds { display: flex; flex-direction: column; gap: clamp(0.35rem, 0.7vw, 0.55rem); }
+    #s9t .pcred {
+      display: flex; align-items: flex-start; gap: 0.6em;
+      font-size: clamp(0.65rem, 1.1vw, 0.82rem); color: var(--text-2); line-height: 1.5;
+    }
+    #s9t .pcred::before { content: '▸'; color: var(--mag); flex-shrink: 0; margin-top: 0.05em; }
+    #s9t .pcard:last-child .pcred::before { color: var(--cyan); }
+    #s9t .why {
+      margin-top: clamp(1.2rem, 2.5vw, 2rem);
+      font-size: clamp(0.72rem, 1.25vw, 0.88rem);
+      color: var(--text-2); max-width: 58ch;
+    }
+    #s9t .why strong { color: var(--cyan); }
+    @media (max-width: 600px) { #s9t .tgrid { grid-template-columns: 1fr; } }
+
+    /* =====================================================
+       INLINE EDITING
+       ===================================================== */
+    .edit-hotzone {
+      position: fixed; top: 0; left: 0; width: 80px; height: 80px;
+      z-index: 10000; cursor: pointer;
+    }
+    .edit-toggle {
+      position: fixed; top: 1rem; left: 1rem;
+      background: rgba(0,255,204,0.12); border: 1px solid rgba(0,255,204,0.4);
+      color: var(--cyan); font-family: var(--fb);
+      font-size: clamp(0.6rem, 0.95vw, 0.72rem); letter-spacing: 0.1em;
+      padding: 0.4em 0.85em; cursor: pointer; z-index: 10001;
+      opacity: 0; pointer-events: none; transition: opacity 0.3s ease;
+    }
+    .edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+    .edit-banner {
+      position: fixed; top: 0; left: 0; right: 0;
+      background: rgba(0,255,204,0.08); border-bottom: 1px solid rgba(0,255,204,0.25);
+      color: var(--cyan); text-align: center; font-family: var(--fb);
+      font-size: clamp(0.58rem, 0.92vw, 0.7rem); letter-spacing: 0.15em;
+      text-transform: uppercase; padding: 0.4em; z-index: 9999; display: none;
+    }
+    .edit-banner.active { display: block; }
+    body.edit-active [contenteditable] { outline: 1px dashed rgba(0,255,204,0.3); cursor: text; }
+    body.edit-active [contenteditable]:focus { outline: 1px solid var(--cyan); }
+
+    @keyframes blink {
+      0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--cyan); }
+      50% { opacity: 0.3; box-shadow: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="progress-bar" id="progressBar"></div>
+  <nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+  <div class="edit-hotzone" id="editHotzone"></div>
+  <button class="edit-toggle" id="editToggle" aria-label="Toggle edit mode">✏ EDIT</button>
+  <div class="edit-banner" id="editBanner">Edit mode — click any text to edit — Ctrl+S to save</div>
+
+  <!-- ====================================================
+       SLIDE 1 — TITLE
+       ==================================================== -->
+  <section class="slide" id="s1" aria-label="Title">
+    <div class="orb oc o1"></div>
+    <div class="orb om o2"></div>
+    <div class="corner reveal">01 / 09</div>
+    <div class="inner">
+      <div class="app-name reveal">FlowOS</div>
+      <div class="badge reveal"><span class="bdot"></span><span>AI × Neurodiversity — Seed Round</span></div>
+      <h1 class="reveal">Your brain<br>has a <span class="c">pattern.</span><br>We decode it.</h1>
+      <div class="gline reveal"></div>
+      <p class="sub reveal">The first cognitive operating system for ADHD minds — predict your focus windows, enter flow state on demand.</p>
+      <div class="hero-metrics reveal" aria-label="Key positioning">
+        <div class="metric">
+          <div class="metric-value">ADHD</div>
+          <div class="metric-label">Primary Target</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value mg">Flow</div>
+          <div class="metric-label">On Demand</div>
+        </div>
+        <div class="metric">
+          <div class="metric-value">AI</div>
+          <div class="metric-label">Personalized</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SLIDE 2 — THE PROBLEM
+       ==================================================== -->
+  <section class="slide" id="s2" aria-label="The Problem">
+    <div class="orb om o1"></div>
+    <div class="slide-content">
+      <div class="badge reveal" style="margin-bottom:clamp(1.5rem,3vw,2.5rem)"><span style="width:5px;height:5px;border-radius:50%;background:var(--mag);box-shadow:0 0 6px var(--mag)"></span><span>The Problem</span></div>
+      <div class="pquote reveal">&ldquo;I don&rsquo;t know<br>when I can <span class="m">focus.&rdquo;</span></div>
+      <div class="insight reveal">
+        <p>ADHD is not a <strong>discipline problem.</strong><br>
+        It is a <strong>state regulation problem.</strong><br>
+        366M+ adults worldwide — none of them can<br>
+        reliably predict when they&rsquo;ll enter flow.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SLIDE 3 — WHY TOOLS FAIL
+       ==================================================== -->
+  <section class="slide" id="s3" aria-label="Why Tools Fail">
+    <div class="slide-content">
+      <div class="blabel reveal">The Gap</div>
+      <h2 class="reveal">Current tools weren&rsquo;t built<br>for ADHD brains.</h2>
+      <div class="fgrid reveal">
+        <div class="fc">
+          <div class="fn">Calendar Apps</div>
+          <div class="fr">Assume you can schedule focus. ADHD brains don&rsquo;t work on command.</div>
+        </div>
+        <div class="fc">
+          <div class="fn">To-Do Lists</div>
+          <div class="fr">Require consistent discipline — the exact thing ADHD impairs most.</div>
+        </div>
+        <div class="fc">
+          <div class="fn">Habit Trackers</div>
+          <div class="fr">Track behavior. Give generic advice. Never adapt to your actual brain state.</div>
+        </div>
+      </div>
+      <p class="fb2 reveal">Every tool out there records your life. <strong>None of them predict it.</strong></p>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SLIDE 4 — SOLUTION
+       ==================================================== -->
+  <section class="slide" id="s4" aria-label="Solution">
+    <div class="slide-content">
+      <div class="blabel reveal">The Solution</div>
+      <h2 class="reveal">A four-step cognitive<br>operating system.</h2>
+      <div class="steps">
+        <div class="step reveal">
+          <div class="sn">01</div>
+          <div><div class="st">Collect</div><div class="sd">Sleep, food, caffeine, hydration, movement, mood — logged passively, zero friction.</div></div>
+        </div>
+        <div class="step reveal">
+          <div class="sn">02</div>
+          <div><div class="st">Learn</div><div class="sd">AI detects your personal focus patterns — when you peak, what kills your concentration.</div></div>
+        </div>
+        <div class="step reveal">
+          <div class="sn">03</div>
+          <div><div class="st">Predict</div><div class="sd">&ldquo;Peak focus window in 30 min.&rdquo; &ldquo;Avoid deep work now — low energy signal detected.&rdquo;</div></div>
+        </div>
+        <div class="step hi reveal">
+          <div class="sn">04</div>
+          <div><div class="st">Flow Mode ✦</div><div class="sd">Actively guides you into flow — timing, environment, task sequencing, dopamine ramp.</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SLIDE 5 — FLOW MODE
+       ==================================================== -->
+  <section class="slide" id="s5" aria-label="Flow Mode">
+    <div class="fl">
+      <div class="ftag reveal">Key Differentiator</div>
+      <h2 class="reveal"><span class="fg">Flow Mode.</span><br>On demand.</h2>
+      <p class="fdesc reveal">We don&rsquo;t just tell you when to focus. We guide you in — actively, intelligently, every single time.</p>
+    </div>
+    <div class="fr2">
+      <div class="ffeats">
+        <div class="ff reveal"><div class="fi">⏱</div><div><div class="fft">Timing Engine</div><div class="ffd">Schedules deep work at predicted peak windows based on your biometric patterns.</div></div></div>
+        <div class="ff reveal"><div class="fi">🌡</div><div><div class="fft">Environment Cues</div><div class="ffd">Sound, light, and distraction settings tuned precisely to your focus profile.</div></div></div>
+        <div class="ff reveal"><div class="fi">🧩</div><div><div class="fft">Task Sequencing</div><div class="ffd">Presents the right task at the right moment — dopamine ramp built in by design.</div></div></div>
+        <div class="ff reveal"><div class="fi">🔁</div><div><div class="fft">Feedback Loop</div><div class="ffd">Every session retrains the model. The system gets sharper with you over time.</div></div></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SLIDE 6 — MARKET
+       ==================================================== -->
+  <section class="slide" id="s6" aria-label="Market">
+    <div class="slide-content">
+      <div class="blabel reveal">Market Opportunity</div>
+      <h2 class="reveal">A massive, underserved market.</h2>
+      <div class="mgrid reveal">
+        <div class="tier t1">
+          <div class="tlbl">Primary</div>
+          <div class="tname">ADHD Users</div>
+          <div class="twho">Students &amp; young professionals. 366M+ globally. Chronically underserved by existing productivity tools.</div>
+        </div>
+        <div class="tier t2">
+          <div class="tlbl">Secondary</div>
+          <div class="tname">Knowledge Workers</div>
+          <div class="twho">Remote workers, developers, writers, creatives — anyone whose output depends on sustained focus.</div>
+        </div>
+        <div class="tier t3">
+          <div class="tlbl">Expansion</div>
+          <div class="tname">Enterprise</div>
+          <div class="twho">Schools, universities, companies investing in employee cognitive wellness and performance.</div>
+        </div>
+      </div>
+      <p class="mstat reveal"><strong>366M+ adults</strong> diagnosed with ADHD worldwide. Growing 3× faster than the productivity app market.</p>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SLIDE 7 — TECH
+       ==================================================== -->
+  <section class="slide" id="s7" aria-label="Technology">
+    <div class="slide-content">
+      <div class="blabel reveal">Technology</div>
+      <h2 class="reveal">Built different, from<br>the ground up.</h2>
+      <div class="loop reveal">
+        <div class="ln"><div class="lt">Behavior Input</div><div class="ld">Sleep, food, habits, mood — time-series streams</div></div>
+        <div class="ln"><div class="lt">Personal Model</div><div class="ld">Per-user ML — no population averages</div></div>
+        <div class="ln"><div class="lt">Prediction</div><div class="ld">Focus score + timing windows</div></div>
+        <div class="ln"><div class="lt">Feedback</div><div class="ld">Outcomes retrain the model continuously</div></div>
+      </div>
+      <div class="tpts reveal">
+        <span class="tp">Time-series behavior modeling</span>
+        <span class="tp">Per-user personalized models (not generic advice)</span>
+        <span class="tp">Reinforcement learning optimization loop</span>
+        <span class="tp">Privacy-first on-device processing</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SLIDE 8 — ROADMAP
+       ==================================================== -->
+  <section class="slide" id="s8" aria-label="Roadmap">
+    <div class="slide-content">
+      <div class="blabel reveal">Roadmap</div>
+      <h2 class="reveal">Realistic, staged execution.</h2>
+      <div class="rgrid reveal">
+        <div class="ph ph1">
+          <div class="pv">v1</div>
+          <div class="pname">Foundation</div>
+          <ul class="pfl">
+            <li>Manual behavior logging</li>
+            <li>Rule-based focus insights</li>
+            <li>Focus score dashboard</li>
+            <li>iOS + Android MVP</li>
+          </ul>
+        </div>
+        <div class="ph ph2">
+          <div class="pv">v2</div>
+          <div class="pname">Intelligence</div>
+          <ul class="pfl">
+            <li>ML-based focus predictions</li>
+            <li>Personalized pattern detection</li>
+            <li>Smart scheduling integration</li>
+            <li>Wearable data support</li>
+          </ul>
+        </div>
+        <div class="ph ph3">
+          <div class="pv">v3</div>
+          <div class="pname">Flow</div>
+          <ul class="pfl">
+            <li>Real-time recommendations</li>
+            <li>Full Flow Mode activation</li>
+            <li>RL optimization engine</li>
+            <li>Enterprise dashboard</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SLIDE 9 — TEAM
+       ==================================================== -->
+  <section class="slide" id="s9t" aria-label="Team">
+    <div class="slide-content">
+      <div class="blabel reveal">The Builders</div>
+      <h2 class="reveal">The right team<br>for this problem.</h2>
+      <div class="tgrid reveal">
+        <div class="pcard">
+          <div class="pname">Aria Shi</div>
+          <div class="prole">ML &amp; Backend Engineering</div>
+          <div class="pcreds">
+            <div class="pcred">MSE Scientific Computing, University of Pennsylvania</div>
+            <div class="pcred">BSc Mathematics &amp; Physics, University College London</div>
+            <div class="pcred">Building the prediction engine and data infrastructure</div>
+          </div>
+        </div>
+        <div class="pcard">
+          <div class="pname">Shufang Tan</div>
+          <div class="prole">Research &amp; Cognitive Science</div>
+          <div class="pcreds">
+            <div class="pcred">PhD Cognitive Science, Peking University</div>
+            <div class="pcred">MSc Computer Science, Tsinghua University</div>
+            <div class="pcred">Researcher, Children's Hospital of Philadelphia (CHOP)</div>
+          </div>
+        </div>
+      </div>
+      <p class="why reveal">A rare combination of <strong>ML engineering depth</strong> and <strong>clinical cognitive science</strong> — built specifically for this intersection.</p>
+    </div>
+  </section>
+
+  <!-- ====================================================
+       SLIDE 10 — VISION + CTA
+       ==================================================== -->
+  <section class="slide" id="s9" aria-label="Vision">
+    <div class="orb oc o1"></div>
+    <div class="orb om o2"></div>
+    <div class="slide-content">
+      <div class="blabel reveal">The Vision</div>
+      <h2 class="reveal">Not productivity.<br><span class="vc">Cognitive</span><br><span class="vm">engineering.</span></h2>
+      <p class="vsub reveal">We&rsquo;re building the operating system for neurodiverse minds — starting with ADHD, expanding to anxiety, burnout, and cognitive optimization for everyone.</p>
+      <div class="ctarow reveal">
+        <span class="cemail">xish@seas.upenn.edu</span>
+        <span class="cemail">tans4@chop.edu</span>
+        <span class="cdiv"></span>
+        <span class="ctag">&ldquo;This is not productivity — it&rsquo;s cognitive engineering.&rdquo;</span>
+      </div>
+    </div>
+    <div class="bline">
+      <div class="brand reveal"><span class="bc">FlowOS</span> — Cognitive AI for ADHD</div>
+      <div class="cnt reveal">10 / 10</div>
+    </div>
+  </section>
+
+  <script>
+    /* =====================================================
+       SLIDE PRESENTATION CONTROLLER
+       ===================================================== */
+    class SlidePresentation {
+      constructor() {
+        this.slides = Array.from(document.querySelectorAll('.slide'));
+        this.current = 0;
+        this.touchY = 0;
+        this.progressBar = document.getElementById('progressBar');
+        this.navCt = document.getElementById('navDots');
+        this.setupObserver();
+        this.setupNavDots();
+        this.setupKeyboard();
+        this.setupTouch();
+        this.setupWheel();
+        this.updateProgress(0);
+      }
+
+      setupObserver() {
+        const obs = new IntersectionObserver((entries) => {
+          entries.forEach(e => {
+            if (e.isIntersecting) {
+              e.target.classList.add('visible');
+              const i = this.slides.indexOf(e.target);
+              if (i !== -1) { this.current = i; this.updateProgress(i); this.updateDots(i); }
+            }
+          });
+        }, { threshold: 0.5 });
+        this.slides.forEach(s => obs.observe(s));
+      }
+
+      setupNavDots() {
+        this.navCt.innerHTML = '';
+        this.slides.forEach((_, i) => {
+          const d = document.createElement('button');
+          d.className = 'nav-dot' + (i === 0 ? ' active' : '');
+          d.setAttribute('aria-label', `Slide ${i + 1}`);
+          d.addEventListener('click', () => this.go(i));
+          this.navCt.appendChild(d);
+        });
+      }
+
+      updateDots(idx) {
+        this.navCt.querySelectorAll('.nav-dot').forEach((d, i) => d.classList.toggle('active', i === idx));
+      }
+
+      updateProgress(idx) {
+        const pct = this.slides.length > 1 ? (idx / (this.slides.length - 1)) * 100 : 100;
+        this.progressBar.style.width = pct + '%';
+      }
+
+      go(idx) {
+        if (idx < 0 || idx >= this.slides.length) return;
+        this.slides[idx].scrollIntoView({ behavior: 'smooth' });
+      }
+
+      next() { this.go(this.current + 1); }
+      prev() { this.go(this.current - 1); }
+
+      setupKeyboard() {
+        document.addEventListener('keydown', e => {
+          if (document.body.classList.contains('edit-active') && e.target.getAttribute('contenteditable')) return;
+          if (['ArrowDown', 'ArrowRight', ' '].includes(e.key)) { e.preventDefault(); this.next(); }
+          if (['ArrowUp', 'ArrowLeft'].includes(e.key)) { e.preventDefault(); this.prev(); }
+          if (e.key === 'PageDown') { e.preventDefault(); this.next(); }
+          if (e.key === 'PageUp') { e.preventDefault(); this.prev(); }
+        });
+      }
+
+      setupTouch() {
+        document.addEventListener('touchstart', e => { this.touchY = e.touches[0].clientY; }, { passive: true });
+        document.addEventListener('touchend', e => {
+          const d = this.touchY - e.changedTouches[0].clientY;
+          if (Math.abs(d) > 50) { d > 0 ? this.next() : this.prev(); }
+        }, { passive: true });
+      }
+
+      setupWheel() {
+        let t = null;
+        document.addEventListener('wheel', e => {
+          e.preventDefault();
+          if (t) return;
+          t = setTimeout(() => { t = null; }, 800);
+          e.deltaY > 0 ? this.next() : this.prev();
+        }, { passive: false });
+      }
+    }
+
+    /* =====================================================
+       INLINE EDITOR
+       ===================================================== */
+    class InlineEditor {
+      constructor() {
+        this.isActive = false;
+        this.toggle = document.getElementById('editToggle');
+        this.banner = document.getElementById('editBanner');
+        this.hotzone = document.getElementById('editHotzone');
+        this.hideT = null;
+        this.STORAGE_KEY = 'cogos-edits-v2';
+        this.LEGACY_STORAGE_KEY = 'cogos-edits';
+        this.SELECTORS = 'h1,h2,p,.sub,.pquote,.insight p,.fn,.fr,.fb2,.fdesc,.fft,.ffd,.st,.sd,.lt,.ld,.tp,.tname,.twho,.mstat,.pname,.vsub,.cemail,.ctag,.brand,.blabel,.app-name,.metric-value,.metric-label';
+        this.setup();
+        this.loadFromStorage();
+      }
+
+      editableElements() {
+        return Array.from(document.querySelectorAll(this.SELECTORS));
+      }
+
+      keyFor(el) {
+        if (el.dataset.editKey) return el.dataset.editKey;
+        const slide = el.closest('.slide');
+        const scope = slide || document.body;
+        const scopeId = slide?.id || 'document';
+        const localIndex = Array.from(scope.querySelectorAll(this.SELECTORS)).indexOf(el);
+        return `${scopeId}:${localIndex}`;
+      }
+
+      setup() {
+        const show = () => { clearTimeout(this.hideT); this.toggle.classList.add('show'); };
+        const hide = () => { this.hideT = setTimeout(() => { if (!this.isActive) this.toggle.classList.remove('show'); }, 400); };
+        this.hotzone.addEventListener('mouseenter', show);
+        this.hotzone.addEventListener('mouseleave', hide);
+        this.toggle.addEventListener('mouseenter', show);
+        this.toggle.addEventListener('mouseleave', hide);
+        this.toggle.addEventListener('click', () => this.flipMode());
+        this.hotzone.addEventListener('click', () => this.flipMode());
+        document.addEventListener('keydown', e => {
+          if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable')) this.flipMode();
+          if (e.ctrlKey && e.key === 's' && this.isActive) { e.preventDefault(); this.save(); this.exportFile(); }
+        });
+      }
+
+      flipMode() {
+        this.isActive = !this.isActive;
+        document.body.classList.toggle('edit-active', this.isActive);
+        this.toggle.classList.toggle('active', this.isActive);
+        this.banner.classList.toggle('active', this.isActive);
+        this.editableElements().forEach(el => {
+          this.isActive ? el.setAttribute('contenteditable', 'true') : el.removeAttribute('contenteditable');
+        });
+        if (!this.isActive) this.save();
+        this.toggle.textContent = this.isActive ? '✓ DONE' : '✏ EDIT';
+      }
+
+      save() {
+        try {
+          const data = {};
+          this.editableElements().forEach(el => { data[this.keyFor(el)] = el.innerHTML; });
+          localStorage.setItem(this.STORAGE_KEY, JSON.stringify(data));
+          localStorage.removeItem(this.LEGACY_STORAGE_KEY);
+        } catch(e) {}
+      }
+
+      loadFromStorage() {
+        try {
+          const saved = JSON.parse(localStorage.getItem(this.STORAGE_KEY) || 'null');
+          if (!saved) return;
+          this.editableElements().forEach(el => {
+            const key = this.keyFor(el);
+            if (saved[key] !== undefined) el.innerHTML = saved[key];
+          });
+        } catch(e) {}
+      }
+
+      exportFile() {
+        /* Strip edit state so the saved file opens cleanly */
+        const editable = Array.from(document.querySelectorAll('[contenteditable]'));
+        editable.forEach(el => el.removeAttribute('contenteditable'));
+        document.body.classList.remove('edit-active');
+        this.toggle?.classList.remove('active', 'show');
+        this.banner?.classList.remove('active');
+
+        const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+        /* Restore */
+        document.body.classList.add('edit-active');
+        editable.forEach(el => el.setAttribute('contenteditable', 'true'));
+        this.toggle?.classList.add('active');
+        this.banner?.classList.add('active');
+
+        const blob = new Blob([html], { type: 'text/html' });
+        const a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'cognitive-os-pitch.html';
+        a.click();
+        URL.revokeObjectURL(a.href);
+      }
+    }
+
+    const presentation = new SlidePresentation();
+    const editor = new InlineEditor();
+  </script>
+</body>
+</html>
