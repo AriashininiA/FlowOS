@@ -14,7 +14,7 @@ This repository currently contains the FlowOS pitch deck as a static HTML presen
 MSE @ Upenn | Machine Learning Engineer | BSc @ UCL | Physics & Math <br>
 Focus areas: Model Architecture, AI systems, Reinforcement learning, Applied ML infrastructure
 
-**Shufang Tan**
+**Shufang Tan** [GitHub](https://github.com/Aren-T), [LinkedIn](www.linkedin.com/in/shufang-t-b7417118b/)
 Researcher @ Children's Hospital of Philadelphia |
 PhD in Cognitive Science |
 MSc in Computer Science
